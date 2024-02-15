@@ -120,14 +120,6 @@ export const translateAndUpdate = async (
   try {
     const lines = inputText.split("\n");
 
-    // Get suggestion based on entered text
-    const suggestion = await getSuggestion(inputText, selectedTable);
-    if (suggestion !== null) {
-      setHintText(suggestion);
-    } else {
-      setHintText("");
-    }
-
     // Translate each line independently
     const translatedLines = await Promise.all(
       lines.map(async (line) => {
@@ -146,6 +138,15 @@ export const translateAndUpdate = async (
     if (setSpokenFeedback !== null) {
       setSpokenFeedback(words[words.length - 2]);
     }
+
+    // Get suggestion based on sanitized print text
+    const suggestion = await getSuggestion(sanitizedText, selectedTable);
+    if (suggestion !== null) {
+      setHintText(suggestion);
+    } else {
+      setHintText("");
+    }
+
   } catch (error) {
     console.error("Error during translation:", error);
     console.log("Fail");
