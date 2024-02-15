@@ -1,11 +1,16 @@
 const translateUrl = "https://www.paige.ninarimsky.com/translate";
 const backtranslateUrl = "https://www.paige.ninarimsky.com/backtranslate";
+const suggestionUrl = "http://0.0.0.0:8080/glenda";
 
 interface TranslationResult {
   braille: string;
 }
 
 interface BacktranslationResult {
+  text: string;
+}
+
+interface suggestionResult {
   text: string;
 }
 
@@ -73,14 +78,55 @@ export const backtranslateToASCII = async (
   }
 };
 
+// Function to get suggestion based on entered text
+export const getSuggestion = async (
+  text: string,
+  tableName: string,
+): Promise<string | null> => {
+  const requestBody = {
+    text: text,
+    tableList: [tableName],
+  };
+
+  try {
+    const response = await fetch(suggestionUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (response.ok) {
+      const result: suggestionResult = await response.json();
+      return result.text;
+    } else {
+      console.error("suggestion failed:", response.statusText);
+      return null;
+    }
+  } catch (error: any) {
+    console.error("Error during suggestion:", error.message);
+    return null;
+  }
+};
+
 export const translateAndUpdate = async (
   inputText: string,
   selectedTable: string,
   setPrintText: React.Dispatch<React.SetStateAction<string>>,
   setSpokenFeedback: React.Dispatch<React.SetStateAction<string>> | null,
+  setHintText: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   try {
     const lines = inputText.split("\n");
+
+    // Get suggestion based on entered text
+    const suggestion = await getSuggestion(inputText, selectedTable);
+    if (suggestion !== null) {
+      setHintText(suggestion);
+    } else {
+      setHintText("NULLLLLL");
+    }
 
     // Translate each line independently
     const translatedLines = await Promise.all(

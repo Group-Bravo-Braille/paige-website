@@ -12,6 +12,8 @@ export default function Translate() {
   const [inputText, setInputText] = useState<string>("");
   // Used to store the print test displayed when the braille input is translated
   const [printText, setPrintText] = useState<string>("");
+  // Used to store the hint text
+  const [hintText, setHintText] = useState<string>("");
   // Used to store the selected table
   const [selectedTable, setSelectedTable] = useState<string>("en-ueb-g1.ctb"); // Initial table
   // Used to store the state of the key editor
@@ -68,6 +70,7 @@ export default function Translate() {
       selectedTable,
       setPrintText,
       setSpokenFeedback,
+      setHintText,
     );
   };
 
@@ -130,7 +133,7 @@ export default function Translate() {
               cols={25}
               value={printText}
               className="rounded border border-paigedarkgrey outline-primary p-2 w-full"
-              //aria-live="assertive"
+            //aria-live="assertive"
             />
           </div>
         </div>
@@ -140,6 +143,12 @@ export default function Translate() {
               Spoken feedback:
             </div>
             <div aria-live="assertive">{spokenFeedback}</div>
+          </div>
+          <div>
+            <div className="tracking-tight font-bold leading-tight py-2 md:py-0">
+              Hints:
+            </div>
+            <div aria-live="assertive">{hintText}</div>
           </div>
           <button
             onClick={handleCopy}
