@@ -99,6 +99,7 @@ export const getSuggestion = async (
 
     if (response.ok) {
       const result: suggestionResult = await response.json();
+      console.log(result.pred);
       return result.pred;
     } else {
       console.error("suggestion failed:", response.statusText);
