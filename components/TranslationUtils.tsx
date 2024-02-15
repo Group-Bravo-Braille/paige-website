@@ -1,6 +1,6 @@
 const translateUrl = "http://0.0.0.0:8080/translate";
 const backtranslateUrl = "http://0.0.0.0:8080/backtranslate";
-const suggestionUrl = "http://0.0.0.0:8080/glenda";
+const suggestionUrl = "http://0.0.0.0:8080/lstm";
 
 interface TranslationResult {
   braille: string;
