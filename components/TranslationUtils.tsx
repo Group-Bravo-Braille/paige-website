@@ -1,5 +1,5 @@
-const translateUrl = "https://www.paige.ninarimsky.com/translate";
-const backtranslateUrl = "https://www.paige.ninarimsky.com/backtranslate";
+const translateUrl = "http://0.0.0.0:8080/translate";
+const backtranslateUrl = "http://0.0.0.0:8080/backtranslate";
 const suggestionUrl = "http://0.0.0.0:8080/glenda";
 
 interface TranslationResult {
