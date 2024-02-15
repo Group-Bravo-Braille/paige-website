@@ -125,7 +125,7 @@ export const translateAndUpdate = async (
     if (suggestion !== null) {
       setHintText(suggestion);
     } else {
-      setHintText("NULLLLLL");
+      setHintText("");
     }
 
     // Translate each line independently
