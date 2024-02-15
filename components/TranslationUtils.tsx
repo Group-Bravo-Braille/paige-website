@@ -11,7 +11,7 @@ interface BacktranslationResult {
 }
 
 interface suggestionResult {
-  text: string;
+  pred: string;
 }
 
 // Function to translate ASCII Braille to print
@@ -99,7 +99,7 @@ export const getSuggestion = async (
 
     if (response.ok) {
       const result: suggestionResult = await response.json();
-      return result.text;
+      return result.pred;
     } else {
       console.error("suggestion failed:", response.statusText);
       return null;
