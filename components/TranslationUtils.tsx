@@ -1,6 +1,6 @@
 const translateUrl = "http://0.0.0.0:8080/translate";
 const backtranslateUrl = "http://0.0.0.0:8080/backtranslate";
-const suggestionUrl = "http://0.0.0.0:8080/lstm";
+const nextCharacterUrl = "http://0.0.0.0:8080/nextcharacter";
 
 interface TranslationResult {
   braille: string;
@@ -10,8 +10,16 @@ interface BacktranslationResult {
   text: string;
 }
 
-interface suggestionResult {
-  pred: string;
+interface NextCharactersResult {
+  pred: string[];
+}
+
+interface CharactersToBrailleAscii {
+  braille: string[];
+}
+
+interface PredExists {
+  exists: boolean;
 }
 
 // Function to translate ASCII Braille to print
@@ -78,18 +86,18 @@ export const backtranslateToASCII = async (
   }
 };
 
-// Function to get suggestion based on entered text
-export const getSuggestion = async (
+// Function to get nextCharacter based on entered text
+export const nextCharacters = async (
   text: string,
   tableName: string,
-): Promise<string | null> => {
+): Promise<string[] | null> => {
   const requestBody = {
     text: text,
     tableList: [tableName],
   };
 
   try {
-    const response = await fetch(suggestionUrl, {
+    const response = await fetch(nextCharacterUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -98,15 +106,15 @@ export const getSuggestion = async (
     });
 
     if (response.ok) {
-      const result: suggestionResult = await response.json();
-      console.log(result.pred);
+      const result: NextCharactersResult = await response.json();
+      console.log(result);
       return result.pred;
     } else {
-      console.error("suggestion failed:", response.statusText);
+      console.error("nextCharacter failed:", response.statusText);
       return null;
     }
   } catch (error: any) {
-    console.error("Error during suggestion:", error.message);
+    console.error("Error during nextCharacter:", error.message);
     return null;
   }
 };
@@ -140,10 +148,15 @@ export const translateAndUpdate = async (
       setSpokenFeedback(words[words.length - 2]);
     }
 
-    // Get suggestion based on sanitized print text
-    const suggestion = await getSuggestion(sanitizedText, selectedTable);
-    if (suggestion !== null) {
-      setHintText(suggestion);
+    // Get nextCharacter based on sanitized print text
+    const nextCharacterList = await nextCharacters(sanitizedText, selectedTable);
+    if (nextCharacterList !== null) {
+      var nextCharacterString = "";
+      for (var i = 0; i < nextCharacterList.length; i++) {
+        nextCharacterString += nextCharacterList[i];
+      }
+      setHintText(nextCharacterString);
+      console.log(nextCharacterList);
     } else {
       setHintText("");
     }

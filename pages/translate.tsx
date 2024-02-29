@@ -18,6 +18,7 @@ export default function Translate() {
   const [selectedTable, setSelectedTable] = useState<string>("en-ueb-g1.ctb"); // Initial table
   // Used to store the state of the key editor
   const [showKeyEditor, setShowKeyEditor] = useState(false);
+  const [showHint, setShowHint] = useState(true);
   // Used to store the keys that are currently being used
   const [keys, setKeys] = useState<InputKeyMap>({
     "lower-left": "s",
@@ -62,6 +63,11 @@ export default function Translate() {
         console.error("Unable to copy to clipboard", err);
       });
   };
+
+  const handleHintButtonClick = () => {
+    setShowHint(!showHint);
+    console.log(showHint);
+  }
 
   const onTextChange = (newAsciiString: string) => {
     setInputText(newAsciiString);
@@ -142,20 +148,23 @@ export default function Translate() {
             <div className="tracking-tight font-bold leading-tight py-2 md:py-0">
               Spoken feedback:
             </div>
-            <div aria-live="assertive">{spokenFeedback}</div>
+            <div aria-live="assertive">{(spokenFeedback)} {spokenFeedback ? <br /> : ""} {(showHint ? hintText : "")}</div>
+
           </div>
-          <div>
-            <div className="tracking-tight font-bold leading-tight py-2 md:py-0">
-              Hints:
-            </div>
-            <div aria-live="assertive">{hintText}</div>
-          </div>
+          <button
+            onClick={handleHintButtonClick}
+            // className="p-2 h-8 w-8 bg-primary text-white rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded h-10"
+          >
+            {showHint ? "Hide Hints" : "Show Hints"}
+          </button>
           <button
             onClick={handleCopy}
             className="p-2 h-8 w-8 bg-primary text-white rounded"
           >
             <Copy title="Copy" className="w-4 h-4" />
           </button>
+          
         </div>
         <div className="flex flex-col bg-white px-4 justify-between relative py-10 gap-6 sm:rounded-lg">
           <div className="flex flex-col justify-between">
