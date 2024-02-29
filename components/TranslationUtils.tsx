@@ -26,7 +26,7 @@ interface PredExists {
 }
 
 interface GetContraction {
-  correction: string
+  contraction: string
 }
 
 // Function to translate ASCII Braille to print
@@ -125,7 +125,7 @@ export const nextCharacters = async (
   }
 };
 
-// Function to get contraction corrections based on input text
+// Function to get contraction based on input text
 export const getContraction = async (
   braille: string,
   tableName: string,
@@ -146,13 +146,13 @@ export const getContraction = async (
 
     if (response.ok) {
       const result: GetContraction = await response.json();
-      return result.correction;
+      return result.contraction;
     } else {
-      console.error("Contraction correction failed:", response.statusText);
+      console.error("Get Contraction failed:", response.statusText);
       return null;
     }
   } catch (error: any) {
-    console.error("Error during contraction correction:", error.message);
+    console.error("Error during Get Contraction:", error.message);
     return null;
   }
 };
@@ -205,7 +205,7 @@ export const translateAndUpdate = async (
       setHintText("");
     }
 
-    // Get contraction corrections based on last word in braille ascii
+    // Get contraction based on last word in braille ascii
     var lastWordBraille = lines[lines.length - 1].split(" ").slice(-1)[0];
     const contraction = await getContraction(lastWordBraille, selectedTable);
     if (contraction && contraction !== lastWordBraille) {
