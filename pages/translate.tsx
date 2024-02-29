@@ -173,6 +173,13 @@ export default function Translate() {
             {showHint ? "Hide Hints" : "Show Hints"}
           </button>
           <button
+            onClick={handleContractionButtonClick}
+            // className="p-2 h-8 w-8 bg-primary text-white rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded h-10"
+          >
+            {showHint ? "Hide Contractions" : "Show Contractions"}
+          </button>
+          <button
             onClick={handleCopy}
             className="p-2 h-8 w-8 bg-primary text-white rounded"
           >
