@@ -14,11 +14,16 @@ export default function Translate() {
   const [printText, setPrintText] = useState<string>("");
   // Used to store the hint text
   const [hintText, setHintText] = useState<string>("");
+  // Used to store the contraction text
+  const [contractionText, setContractionText] = useState<string>("");
   // Used to store the selected table
   const [selectedTable, setSelectedTable] = useState<string>("en-ueb-g1.ctb"); // Initial table
   // Used to store the state of the key editor
   const [showKeyEditor, setShowKeyEditor] = useState(false);
+  // Used to store if hints are being shown
   const [showHint, setShowHint] = useState(true);
+  // Used to store if contractions are being shown
+  const [showContraction, setShowContraction] = useState(true);
   // Used to store the keys that are currently being used
   const [keys, setKeys] = useState<InputKeyMap>({
     "lower-left": "s",
@@ -66,7 +71,10 @@ export default function Translate() {
 
   const handleHintButtonClick = () => {
     setShowHint(!showHint);
-    console.log(showHint);
+  }
+
+  const handleContractionButtonClick = () => {
+    setShowContraction(!showContraction);
   }
 
   const onTextChange = (newAsciiString: string) => {
@@ -77,6 +85,7 @@ export default function Translate() {
       setPrintText,
       setSpokenFeedback,
       setHintText,
+      setContractionText
     );
   };
 
@@ -148,8 +157,13 @@ export default function Translate() {
             <div className="tracking-tight font-bold leading-tight py-2 md:py-0">
               Spoken feedback:
             </div>
-            <div aria-live="assertive">{(spokenFeedback)} {spokenFeedback ? <br /> : ""} {(showHint ? hintText : "")}</div>
-
+            <div aria-live="assertive">
+              {(spokenFeedback)}
+              {spokenFeedback ? <br /> : ""}
+              {(showHint ? hintText : "")}
+              {showHint ? <br /> : ""}
+              {showContraction ? contractionText : ""}
+            </div>
           </div>
           <button
             onClick={handleHintButtonClick}
@@ -164,7 +178,7 @@ export default function Translate() {
           >
             <Copy title="Copy" className="w-4 h-4" />
           </button>
-          
+
         </div>
         <div className="flex flex-col bg-white px-4 justify-between relative py-10 gap-6 sm:rounded-lg">
           <div className="flex flex-col justify-between">
