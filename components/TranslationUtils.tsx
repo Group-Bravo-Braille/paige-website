@@ -1,6 +1,7 @@
 const translateUrl = "http://0.0.0.0:8080/translate";
 const backtranslateUrl = "http://0.0.0.0:8080/backtranslate";
 const nextCharacterUrl = "http://0.0.0.0:8080/nextcharacter";
+const getContractionUrl = "http://0.0.0.0:8080/getcontraction";
 
 interface TranslationResult {
   braille: string;
@@ -20,6 +21,10 @@ interface CharactersToBrailleAscii {
 
 interface PredExists {
   exists: boolean;
+}
+
+interface GetContraction {
+  correction: string
 }
 
 // Function to translate ASCII Braille to print
@@ -107,14 +112,45 @@ export const nextCharacters = async (
 
     if (response.ok) {
       const result: NextCharactersResult = await response.json();
-      console.log(result);
       return result.pred;
     } else {
-      console.error("nextCharacter failed:", response.statusText);
+      console.error("Next Character Predicition failed:", response.statusText);
       return null;
     }
   } catch (error: any) {
-    console.error("Error during nextCharacter:", error.message);
+    console.error("Error during Next Character Prediction:", error.message);
+    return null;
+  }
+};
+
+// Function to get contraction corrections based on input text
+export const getContraction = async (
+  braille: string,
+  tableName: string,
+): Promise<string | null> => {
+  const requestBody = {
+    braille: braille,
+    tableList: [tableName],
+  };
+
+  try {
+    const response = await fetch(getContractionUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (response.ok) {
+      const result: GetContraction = await response.json();
+      return result.correction;
+    } else {
+      console.error("Contraction correction failed:", response.statusText);
+      return null;
+    }
+  } catch (error: any) {
+    console.error("Error during contraction correction:", error.message);
     return null;
   }
 };
@@ -125,6 +161,7 @@ export const translateAndUpdate = async (
   setPrintText: React.Dispatch<React.SetStateAction<string>>,
   setSpokenFeedback: React.Dispatch<React.SetStateAction<string>> | null,
   setHintText: React.Dispatch<React.SetStateAction<string>>,
+  setContracitonText: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   try {
     const lines = inputText.split("\n");
@@ -159,6 +196,15 @@ export const translateAndUpdate = async (
       console.log(nextCharacterList);
     } else {
       setHintText("");
+    }
+
+    // Get contraction corrections based on last word in braille ascii
+    var lastWordBraille = lines[lines.length - 1].split(" ").slice(-1)[0];
+    const contraction = await getContraction(lastWordBraille, selectedTable);
+    if (contraction && contraction !== lastWordBraille) {
+      setContracitonText(contraction);
+    } else {
+      setContracitonText("")
     }
 
   } catch (error) {
