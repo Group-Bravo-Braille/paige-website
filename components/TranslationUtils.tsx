@@ -1,3 +1,5 @@
+import { asciiBraille } from "./BrailleMapping";
+
 const translateUrl = "http://0.0.0.0:8080/translate";
 const backtranslateUrl = "http://0.0.0.0:8080/backtranslate";
 const nextCharacterUrl = "http://0.0.0.0:8080/nextcharacter";
@@ -153,7 +155,12 @@ export const translateAndUpdate = async (
     if (nextCharacterList !== null) {
       var nextCharacterString = "";
       for (var i = 0; i < nextCharacterList.length; i++) {
-        nextCharacterString += nextCharacterList[i];
+        var dotPattern = asciiBraille[nextCharacterList[i]].dotPattern;
+        if (dotPattern.length == 0) {
+          nextCharacterString += "space ";
+        } else {
+          nextCharacterString += `${nextCharacterList[i]} ${"dots"} ${dotPattern.join(" ")} `;
+        }
       }
       setHintText(nextCharacterString);
       console.log(nextCharacterList);
