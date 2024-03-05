@@ -254,11 +254,13 @@ export const translateAndUpdate = async (
     }
 
     // Get contraction based on last word in braille ascii
-    var lastWordBraille = lines[lines.length - 1].split(" ").slice(-1)[0];
+    var lastLine = lines[lines.length - 1];
+    var lastCharacterIsSpace = lastLine.charAt(lastLine.length - 1) === ' ';  
+    var lastWordBraille = lines[lines.length - 1].trim().split(" ").slice(-1)[0];
     console.log("lastWordBraille", lastWordBraille);
     const contraction = await getContraction(lastWordBraille, selectedTable);
     console.log("contraction", contraction);
-    if (contraction && contraction !== lastWordBraille) {
+    if (contraction && contraction !== lastWordBraille && lastCharacterIsSpace) {
       var ctn = "Contraction for word ";
       ctn += lastWordBraille;
       ctn += ":\n";
@@ -269,7 +271,8 @@ export const translateAndUpdate = async (
       }
       setContractionText(ctn);
     } else {
-      setContractionText("No contractions for current input.")
+      // setContractionText("No contractions for current input.")
+      setContractionText("");
     }
 
   } catch (error) {
