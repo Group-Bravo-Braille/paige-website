@@ -4,6 +4,7 @@ const translateUrl = "http://0.0.0.0:8080/translate";
 const backtranslateUrl = "http://0.0.0.0:8080/backtranslate";
 const nextCharacterUrl = "http://0.0.0.0:8080/nextcharacter";
 const getContractionUrl = "http://0.0.0.0:8080/getcontraction";
+const charactersToBrailleAsciiUrl = "http://0.0.0.0:8080/characterstoasciibraille";
 
 interface TranslationResult {
   braille: string;
@@ -17,7 +18,7 @@ interface NextCharactersResult {
   pred: string[];
 }
 
-interface CharactersToBrailleAscii {
+interface CharactersToBrailleAsciiResult {
   braille: string[];
 }
 
@@ -146,6 +147,7 @@ export const getContraction = async (
 
     if (response.ok) {
       const result: GetContraction = await response.json();
+      console.log("this is the result", result.contraction);
       return result.contraction;
     } else {
       console.error("Get Contraction failed:", response.statusText);
@@ -157,13 +159,44 @@ export const getContraction = async (
   }
 };
 
+export const charactersToBrailleAscii = async (
+  text: string[],
+  tableName: string,
+): Promise<string[] | null> => {
+  const requestBody = {
+    text: text,
+    tableList: [tableName],
+  };
+
+  try {
+    const response = await fetch(charactersToBrailleAsciiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (response.ok) {
+      const result: CharactersToBrailleAsciiResult = await response.json();
+      return result.braille;
+    } else {
+      console.error("Character to Braille Ascii Translation failed:", response.statusText);
+      return null;
+    }
+  } catch (error: any) {
+    console.error("Error during Character to Braille Ascii Translation:", error.message);
+    return null;
+  }
+};
+
 export const translateAndUpdate = async (
   inputText: string,
   selectedTable: string,
   setPrintText: React.Dispatch<React.SetStateAction<string>>,
   setSpokenFeedback: React.Dispatch<React.SetStateAction<string>> | null,
   setHintText: React.Dispatch<React.SetStateAction<string>>,
-  setContracitonText: React.Dispatch<React.SetStateAction<string>>,
+  setContractionText: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   try {
     const lines = inputText.split("\n");
@@ -190,14 +223,29 @@ export const translateAndUpdate = async (
     // Get nextCharacter based on sanitized print text
     const nextCharacterList = await nextCharacters(sanitizedText, selectedTable);
     if (nextCharacterList !== null) {
+      var nextCharacterAsciiList = await charactersToBrailleAscii(nextCharacterList, selectedTable);
       var nextCharacterString = "";
+      console.log("nextCharacterList", nextCharacterList);
+      console.log("nextCharacterAsciiList", nextCharacterAsciiList);
+      nextCharacterString += "Hints for current input string:\n";
       for (var i = 0; i < nextCharacterList.length; i++) {
-        var dotPattern = asciiBraille[nextCharacterList[i]].dotPattern;
-        if (dotPattern.length == 0) {
-          nextCharacterString += "space ";
+        var ascii = nextCharacterAsciiList[i];
+        if (ascii.length == 0) {
+          nextCharacterString += "space";
         } else {
-          nextCharacterString += `${nextCharacterList[i]} ${"dots"} ${dotPattern.join(" ")} `;
+          nextCharacterString += nextCharacterList[i];
+          nextCharacterString += " ";
+          for (var j = 0; j < ascii.length; j++) {
+            if (asciiBraille[ascii[j]].dotPattern.length == 0) {
+              nextCharacterString += "space";
+            } else {
+              nextCharacterString += "dots ";
+              nextCharacterString += asciiBraille[ascii[j]].dotPattern.join(" ");
+              nextCharacterString += " ";
+            }
+          }
         }
+        if (i != nextCharacterList.length - 1) nextCharacterString += "\n";
       }
       setHintText(nextCharacterString);
       console.log(nextCharacterList);
@@ -207,11 +255,21 @@ export const translateAndUpdate = async (
 
     // Get contraction based on last word in braille ascii
     var lastWordBraille = lines[lines.length - 1].split(" ").slice(-1)[0];
+    console.log("lastWordBraille", lastWordBraille);
     const contraction = await getContraction(lastWordBraille, selectedTable);
+    console.log("contraction", contraction);
     if (contraction && contraction !== lastWordBraille) {
-      setContracitonText(contraction);
+      var ctn = "Contraction for word ";
+      ctn += lastWordBraille;
+      ctn += ":\n";
+      for (let i = 0; i < contraction.length; i++) {
+        ctn += "dots ";
+        ctn += asciiBraille[contraction[i]].dotPattern.join(" ");
+        ctn += "\n";
+      }
+      setContractionText(ctn);
     } else {
-      setContracitonText("")
+      setContractionText("No contractions for current input.")
     }
 
   } catch (error) {

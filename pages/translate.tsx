@@ -157,9 +157,9 @@ export default function Translate() {
             <div className="tracking-tight font-bold leading-tight py-2 md:py-0">
               Spoken feedback:
             </div>
-            <div aria-live="assertive">
-              {(spokenFeedback)}
-              {spokenFeedback ? <br /> : ""}
+            <div aria-live="assertive" className="whitespace-pre-line">
+              {spokenFeedback ? ("Last word typed: " + spokenFeedback) : "No words typed yet."}
+              {<br />}
               {(showHint ? hintText : "")}
               {showHint ? <br /> : ""}
               {showContraction ? contractionText : ""}
