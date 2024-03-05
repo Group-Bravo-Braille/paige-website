@@ -158,8 +158,8 @@ export default function Translate() {
               Spoken feedback:
             </div>
             <div aria-live="assertive" className="whitespace-pre-line">
-              {spokenFeedback ? ("Last word typed: " + spokenFeedback) : "No words typed yet."}
-              {<br />}
+              {spokenFeedback ? (spokenFeedback) : ""}
+              {spokenFeedback ? <br /> : ""}
               {(showHint ? hintText : "")}
               {showHint ? <br /> : ""}
               {showContraction ? contractionText : ""}

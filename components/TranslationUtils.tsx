@@ -227,7 +227,7 @@ export const translateAndUpdate = async (
       var nextCharacterString = "";
       console.log("nextCharacterList", nextCharacterList);
       console.log("nextCharacterAsciiList", nextCharacterAsciiList);
-      nextCharacterString += "Hints for current input string:\n";
+      nextCharacterString += "Hints:\n";
       for (var i = 0; i < nextCharacterList.length; i++) {
         var ascii = nextCharacterAsciiList[i];
         if (ascii.length == 0) {
@@ -261,7 +261,7 @@ export const translateAndUpdate = async (
     const contraction = await getContraction(lastWordBraille, selectedTable);
     console.log("contraction", contraction);
     if (contraction && contraction !== lastWordBraille && lastCharacterIsSpace) {
-      var ctn = "Contraction for word ";
+      var ctn = "Contraction for ";
       ctn += lastWordBraille;
       ctn += ":\n";
       for (let i = 0; i < contraction.length; i++) {
