@@ -147,7 +147,6 @@ export const getContraction = async (
 
     if (response.ok) {
       const result: GetContraction = await response.json();
-      console.log("this is the result", result.contraction);
       return result.contraction;
     } else {
       console.error("Get Contraction failed:", response.statusText);
@@ -210,7 +209,6 @@ export const translateAndUpdate = async (
 
     // Join the translated lines back together
     const translation = translatedLines.join("\n");
-    console.log(translation);
     // Replace characters between "\ and /" with their Unicode representations
     const sanitizedText = translation.replace(/\\(.*?)\//g, " ");
     setPrintText(sanitizedText);
@@ -225,8 +223,6 @@ export const translateAndUpdate = async (
     if (nextCharacterList !== null) {
       var nextCharacterAsciiList = await charactersToBrailleAscii(nextCharacterList, selectedTable);
       var nextCharacterString = "";
-      console.log("nextCharacterList", nextCharacterList);
-      console.log("nextCharacterAsciiList", nextCharacterAsciiList);
       nextCharacterString += "Hints:\n";
       for (var i = 0; i < nextCharacterList.length; i++) {
         var ascii = nextCharacterAsciiList[i];
@@ -248,7 +244,6 @@ export const translateAndUpdate = async (
         if (i != nextCharacterList.length - 1) nextCharacterString += "\n";
       }
       setHintText(nextCharacterString);
-      console.log(nextCharacterList);
     } else {
       setHintText("");
     }
@@ -257,9 +252,7 @@ export const translateAndUpdate = async (
     var lastLine = lines[lines.length - 1];
     var lastCharacterIsSpace = lastLine.charAt(lastLine.length - 1) === ' ';  
     var lastWordBraille = lines[lines.length - 1].trim().split(" ").slice(-1)[0];
-    console.log("lastWordBraille", lastWordBraille);
     const contraction = await getContraction(lastWordBraille, selectedTable);
-    console.log("contraction", contraction);
     if (contraction && contraction !== lastWordBraille && lastCharacterIsSpace) {
       var ctn = "Contraction for ";
       ctn += lastWordBraille;
@@ -271,12 +264,10 @@ export const translateAndUpdate = async (
       }
       setContractionText(ctn);
     } else {
-      // setContractionText("No contractions for current input.")
       setContractionText("");
     }
 
   } catch (error) {
     console.error("Error during translation:", error);
-    console.log("Fail");
   }
 };
